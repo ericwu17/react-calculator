@@ -24,8 +24,11 @@ function DoubleButton(props) {
 }
 
 class Calculator{
+	// this will be the class which handles all the algorithmic computations
+
+
 	constructor(){
-		
+		//no constructor needed, this class is only a collection of functions.
 	}
 	calculate(expression){
 		console.log("Hey, I'm calculating the expression: " + expression)
