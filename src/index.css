@@ -20,12 +20,10 @@ ol, ul {
 .square {
   background: rgb(0, 0, 0);
   border: 1px solid rgb(207, 49, 49);
-  color:white;  
-  /* the above line is for text color */
+  color:white; /* this is for text color */
   float: left;
   font-size: 24px;
   font-weight: bold;
-  /* text-color: rgb(255,255,255); this doesn't work */
   line-height: 34px;
   height: 34px;
   margin-right: -1px;
