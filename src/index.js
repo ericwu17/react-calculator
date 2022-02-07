@@ -40,9 +40,17 @@ class Calculator{
 		}
 		
 		
-		const chunks = this.splitExpressionIntoChunks(expression)
+		let chunks = this.splitExpressionIntoChunks(expression)
 		console.log("here are the chunks I got for the expression: ")
 		console.log(JSON.stringify(chunks))
+
+		
+		//now we want to replace leading negative signs with {"-1", "*"}
+		chunks = this.processNegativeSigns(chunks)
+
+		console.log("here are the chunks after processing negative signs:")
+		console.log(JSON.stringify(chunks))
+
 
 		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
 		//i.e. we don't want something like [3,*,-, 6] or [*]
@@ -214,6 +222,26 @@ class Calculator{
 		return true
 	}
 
+	processNegativeSigns(chunks) {
+		let newChunks = []
+		for (let chunk of chunks) {
+			if(Array.isArray(chunk)){
+				newChunks.push(this.processNegativeSigns(chunk))
+			} else {
+				newChunks.push(chunk)
+			}
+		}
+
+		//console.log("Processing negative signs on: " + JSON.stringify(newChunks))
+
+		if(chunks[0] == "-"){
+			return ["-1", "*"].concat(chunks.slice(1, chunks.length))
+		}
+		return newChunks
+
+	}
+
+
 	hasValidParenthesisPlacement(expression){
 		let howDeepIntoParens = 0
 		for (let char of expression){
@@ -297,7 +325,7 @@ class Board extends React.Component {
 		super(props)
 		this.state = {
 			expression: "",
-			result: "17",
+			result: "Your result will be displayed here",
 		}
 		this.calculator = new Calculator()
 	}
