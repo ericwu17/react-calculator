@@ -32,8 +32,102 @@ class Calculator{
 	}
 	calculate(expression){
 		console.log("Hey, I'm calculating the expression: " + expression)
+
+		//firstly, we check to see if parenthesis placement is valid, 
+		//since splitExpressionIntoChunks requires valid parenthesis placement in order to work
+		if(!this.hasValidParenthesisPlacement(expression)){
+			return "Hey, it looks like there's a mismatched parenthesis somewhere :("
+		}
+		
+		
+		let chunks = this.splitExpressionIntoChunks(expression)
+		console.log("here are the chunks I got for the expression: ")
+		console.log(JSON.stringify(chunks))
+
+		
+		
+		
+
+
+
+
 		return "RESULT"
 	}
+
+	hasValidParenthesisPlacement(expression){
+		let howDeepIntoParens = 0
+		for (let char of expression){
+			if (char == "("){
+				howDeepIntoParens += 1
+			} 
+			if (char == ")"){
+				howDeepIntoParens -= 1
+			}
+			if (howDeepIntoParens < 0){
+				//you cannot have a closing parenthesis before an opening one
+				return false
+			}
+			//console.log(howDeepIntoParens)
+		}
+		if (howDeepIntoParens != 0){
+			// the number of opening and closing parens must match
+			return false
+		}
+		return true
+	}
+
+	splitExpressionIntoChunks(expression){
+		//we will split the expression into different chunks
+		//for example, 
+			// "(5+3)*1.2" -> [["5", "+", "3"], "*", "1.2"]
+			// "(32+5*2)+*8" -> [["32", "+", "5", "*", "2"], "+", "*", "8"] //this expression is invalid, but this function just blindly converts to chunks
+			
+
+
+		console.log("Chunking: " + expression)
+
+		let chunks = []
+
+
+		for (let index = 0; index < expression.length; index += 1){
+			let char = expression[index]
+			if (char == "("){
+				//when we see an opening parenthesis, we want to perform a recursive call to this function
+				let startIndex = index
+				let depth = 1
+				while(depth > 0){
+					index += 1
+					char = expression[index]
+					if (char == "("){
+						depth += 1
+					} 
+					if (char == ")"){
+						depth -= 1
+					}
+				}
+				let substring = expression.slice(startIndex + 1, index)
+				chunks.push(this.splitExpressionIntoChunks(substring))
+			} else if ("0123456789.".includes(char)){
+				let startIndex = index
+				while("0123456789.".includes(char)){
+					index += 1
+					char = expression[index]
+				}
+				let substring = expression.slice(startIndex, index)
+				chunks.push(substring)
+				index -= 1
+			} else{
+				chunks.push(char)
+			}
+			
+			
+			
+		}
+
+		return chunks
+	}
+
+
 
 }
 
