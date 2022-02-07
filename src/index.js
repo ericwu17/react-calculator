@@ -59,7 +59,8 @@ class Calculator{
 		}
 
 		//now we convert all numbers in the form of strings to the form of floats
-		
+		const parsedChunks = this.convertNumbersFromStringsToFloats(chunks)
+		console.log(JSON.stringify(parsedChunks))
 		
 		
 
@@ -67,6 +68,23 @@ class Calculator{
 
 
 		return "RESULT"
+	}
+
+	convertNumbersFromStringsToFloats(chunks){
+		let newChunks = []
+		for (let chunk of chunks){
+			if (Array.isArray(chunk)){
+				newChunks.push(this.convertNumbersFromStringsToFloats(chunk))
+				continue
+			}
+			if ("+-*/".includes(chunk)){
+				newChunks.push(chunk)
+				continue
+			}
+			//by this point we know the chunk is a number
+			newChunks.push(parseFloat(chunk))
+		}
+		return newChunks
 	}
 
 	containsInvalidNumber(chunks) {
@@ -83,6 +101,7 @@ class Calculator{
 			if ("+-*/".includes(chunk)){
 				continue
 			}
+			//by this point we know the chunk is a number, since parentheses are never included
 			if (chunk == ".") {
 				return chunk
 			}
@@ -93,10 +112,12 @@ class Calculator{
 		}
 	}
 
-
 	hasValidOperatorPlacement(chunks){
 		let lastChunkWasOperator = true
 		for (let chunk of chunks){
+			if (Array.isArray(chunk) && !this.hasValidOperatorPlacement(chunk)){
+				return false
+			}
 			let chunkIsOperator = "+-*/".includes(chunk)
 			if (chunkIsOperator && lastChunkWasOperator) {
 				return false
@@ -139,7 +160,7 @@ class Calculator{
 			
 
 
-		console.log("Chunking: " + expression)
+		//console.log("Chunking: " + expression)
 
 		let chunks = []
 
