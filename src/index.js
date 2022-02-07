@@ -58,8 +58,8 @@ class Calculator{
 			return 'Hey, "' + res + '" is an invalid number!'
 		}
 
-		//now we convert all numbers in the form of strings to the form of floats
-		const parsedChunks = this.convertNumbersFromStringsToFloats(chunks)
+		//now we convert all numbers in the form of strings to the form of floats, and also add implicit multiplication to the chunks
+		const parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
 		console.log(JSON.stringify(parsedChunks))
 		
 		
@@ -69,6 +69,28 @@ class Calculator{
 
 		return "RESULT"
 	}
+
+	addImplicitMultiplication(chunks){
+		let newChunks = []
+		for(let i = 0; i < chunks.length; i += 1){
+			if(Array.isArray(chunks[i])){
+				newChunks.push(this.addImplicitMultiplication(chunks[i]))
+			}
+			else {
+				newChunks.push(chunks[i])
+			}
+
+			let thisChunkIsAValue = !(typeof(chunks[i]) === 'string' || chunks[i] === undefined)
+			let nextChunkIsAValue = !(typeof(chunks[i+1]) === 'string' || chunks[i+1] === undefined)
+			if (thisChunkIsAValue && nextChunkIsAValue){
+				console.log("implicit multiplication at: " + i)
+				//insert a multiplication sign here
+				newChunks.push("*")
+			}
+		}
+		return newChunks
+	}
+
 
 	convertNumbersFromStringsToFloats(chunks){
 		let newChunks = []
@@ -88,7 +110,7 @@ class Calculator{
 	}
 
 	containsInvalidNumber(chunks) {
-		console.log("seeing if there's an invalid number in" + JSON.stringify(chunks))
+		//console.log("seeing if there's an invalid number in" + JSON.stringify(chunks))
 		for (let chunk of chunks){
 			if (Array.isArray(chunk)){
 				let res = this.containsInvalidNumber(chunk)
