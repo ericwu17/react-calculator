@@ -40,10 +40,25 @@ class Calculator{
 		}
 		
 		
-		let chunks = this.splitExpressionIntoChunks(expression)
+		const chunks = this.splitExpressionIntoChunks(expression)
 		console.log("here are the chunks I got for the expression: ")
 		console.log(JSON.stringify(chunks))
 
+		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
+		//i.e. we don't want something like [3,*,-, 6] or [*]
+		//this function also gets rid of expressions containing empty parenthesis such as "3*5-()"
+
+		if(!this.hasValidOperatorPlacement(chunks)){
+			return "Hey, check your operators; one of them is misplaced!"
+		}
+
+		//we now check to see whether there is an invalid number somwhere such as "." or "24.123.2"
+		let res = this.containsInvalidNumber(chunks)
+		if(res){
+			return 'Hey, "' + res + '" is an invalid number!'
+		}
+
+		//now we convert all numbers in the form of strings to the form of floats
 		
 		
 		
@@ -52,6 +67,46 @@ class Calculator{
 
 
 		return "RESULT"
+	}
+
+	containsInvalidNumber(chunks) {
+		console.log("seeing if there's an invalid number in" + JSON.stringify(chunks))
+		for (let chunk of chunks){
+			if (Array.isArray(chunk)){
+				let res = this.containsInvalidNumber(chunk)
+				if(res){
+					return res
+				}
+				continue
+			}
+			
+			if ("+-*/".includes(chunk)){
+				continue
+			}
+			if (chunk == ".") {
+				return chunk
+			}
+			if (chunk.split(".").length - 1 > 1){
+				return chunk
+			}
+			
+		}
+	}
+
+
+	hasValidOperatorPlacement(chunks){
+		let lastChunkWasOperator = true
+		for (let chunk of chunks){
+			let chunkIsOperator = "+-*/".includes(chunk)
+			if (chunkIsOperator && lastChunkWasOperator) {
+				return false
+			}
+			lastChunkWasOperator = chunkIsOperator
+		}
+		if(lastChunkWasOperator){
+			return false
+		}
+		return true
 	}
 
 	hasValidParenthesisPlacement(expression){
