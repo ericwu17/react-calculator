@@ -61,14 +61,76 @@ class Calculator{
 		//now we convert all numbers in the form of strings to the form of floats, and also add implicit multiplication to the chunks
 		const parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
 		console.log(JSON.stringify(parsedChunks))
+		//console.log(JSON.stringify(this.simplifyOnce(parsedChunks)))
 		
-		
 
 
 
 
-		return "RESULT"
+		return this.compute(parsedChunks)
 	}
+
+	compute(chunks){
+		//this function evaluates a set of chunks, working recursively
+
+		let newChunks = []
+
+		//first we do anything inside parenthesis
+		for (let chunk of chunks){
+			if (Array.isArray(chunk)){
+				newChunks.push(this.compute(chunk))
+			} else{
+				newChunks.push(chunk)
+			}
+		}
+
+		//then we repeatedly call simplifyOnce
+		while(newChunks.length > 1){
+			console.log("simplyfying once " +JSON.stringify(newChunks))
+			newChunks = this.simplifyOnce(newChunks)
+		}
+		return newChunks[0]
+	}
+	
+
+	simplifyOnce(chunks){
+		//this function takes in something like [2+3/4-1*6]
+		//and returns [2+0.75-1*6]
+		
+		//it performs the first multiplication or division there is (looking left to right), 
+		//and if there is none, it does the first addition/subtraction
+
+		//if the chunk already has length 1, then it simply returns the chunk
+
+		for (let i = 0; i < chunks.length; i += 1){
+			if(chunks[i] == "*"){
+				return (chunks.slice(0,i-1)
+				.concat([chunks[i-1]*chunks[i+1]])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "/"){
+				return (chunks.slice(0,i-1)
+				.concat([chunks[i-1]/chunks[i+1]])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+		}
+
+		for (let i = 0; i < chunks.length; i += 1){
+			if(chunks[i] == "+"){
+				return (chunks.slice(0,i-1)
+				.concat([chunks[i-1]+chunks[i+1]])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "-"){
+				return (chunks.slice(0,i-1)
+				.concat([chunks[i-1]-chunks[i+1]])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+		}
+
+		return chunks
+	}
+
 
 	addImplicitMultiplication(chunks){
 		let newChunks = []
