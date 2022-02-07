@@ -75,7 +75,8 @@ class Calculator{
 
 
 
-		return this.compute(parsedChunks).toFixed(7)
+		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
+
 	}
 
 	compute(chunks){
