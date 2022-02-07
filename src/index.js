@@ -67,7 +67,7 @@ class Calculator{
 
 
 
-		return this.compute(parsedChunks)
+		return this.compute(parsedChunks).toFixed(7)
 	}
 
 	compute(chunks){
