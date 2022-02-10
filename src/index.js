@@ -52,6 +52,9 @@ class Calculator{
 		//no constructor needed, this class is only a collection of functions.
 	}
 	calculate(expression){
+		if (!expression){
+			return ""
+		}
 
 		//firstly, we check to see if parenthesis placement is valid, 
 		//since splitExpressionIntoChunks requires valid parenthesis placement in order to work
@@ -477,6 +480,10 @@ class Calculator{
 			// the number of opening and closing parens must match
 			return false
 		}
+		if (expression.includes("()")){
+			return false
+		}
+
 		return true
 	}
 
