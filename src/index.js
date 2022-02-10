@@ -61,25 +61,8 @@ class Calculator{
 		
 		
 		let chunks = this.splitExpressionIntoChunks(expression)
-		console.log("Initial chunks: " + JSON.stringify(chunks))
-
-		//now we want to replace leading negative signs with {"-1", "*"}
-		chunks = this.processNegativeSigns(chunks)
-
-
-		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
-		//i.e. we don't want something like [3,*,-, 6] or [*]
-		//this function also gets rid of expressions containing empty parenthesis such as "3*5-()"
-		if(!this.hasValidOperatorPlacement(chunks)){
-			return "Hey, check your operators; one of them is misplaced!"
-		}
 		
 
-		//Now we ensure the functions (sin, cos, tan, ln, gcd, lcm) are always immediately followed by a chunk
-		if(!this.hasValidFunctionPlacement(chunks)){
-			return "Please ensure that all functions are followed by parentheses!"
-		}
-		
 
 		//we now check to see whether there is an invalid number somwhere such as "." or "24.123.2"
 		let res = this.findInvalidNumber(chunks)
@@ -87,26 +70,87 @@ class Calculator{
 			return 'Hey, "' + res + '" is an invalid number!'
 		}
 
+
+		//Now we ensure the functions (sin, cos, tan, ln, gcd, lcm) are always immediately followed by a chunk
+		if(!this.hasValidFunctionPlacement(chunks)){
+			return "Please ensure that all functions are followed by parentheses!"
+		}
 		//now we would like to check for the correct placement of commas
 		if(!this.hasValidCommaPlacement(chunks)){
 			return "Check your commas, please!"
 		}
-
 		//now we convert gcd to a binary operation, so ["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"]
-		let parsedChunks = this.binaryFunctionToInfixNotation(chunks)
+		chunks = this.binaryFunctionToInfixNotation(chunks)
 
+
+
+		console.log("Initial chunks: " + JSON.stringify(chunks))
+		//now we want to replace leading negative signs with {"-1", "*"}
+		chunks = this.processNegativeSigns(chunks)
+
+
+		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
+		//i.e. we don't want something like [3,*,-, 6] or [*]
+		//this function also gets rid of expressions containing empty parenthesis such as "3*5-()"
+		console.log("chunks: " + JSON.stringify(chunks))
+		if(!this.hasValidOperatorPlacement(chunks)){
+			return "Hey, check your operators; one of them is misplaced!"
+		}
+
+
+
+		
+
+		
+
+		
 		//now we convert all numbers in the form of strings to the form of floats. Also converts pi and e to their respective numbers.
-		parsedChunks = this.convertNumbersFromStringsToFloats(parsedChunks)
+		chunks = this.convertNumbersFromStringsToFloats(chunks)
 		
 		//and also add implicit multiplication to the chunks
-		parsedChunks = this.addImplicitMultiplication(parsedChunks)
-		console.log("Immediately before computation: " + JSON.stringify(parsedChunks))
+		chunks = this.addImplicitMultiplication(chunks)
+		console.log("Immediately before computation: " + JSON.stringify(chunks))
 		
 
 
-		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
+		return this.compute(chunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
 
 	}
+
+	findGCD(A,B){
+		//if a and b are not integers, we make them integers
+		A = Math.abs(parseInt(A))
+		B = Math.abs(parseInt(B))
+		if(A == 0 || B == 0){
+			return 0
+		}
+		
+		let q, r
+		let a = Math.max(A,B)
+		let b = Math.min(A,B)
+		//without loss of generality, let a < b
+
+		while (true){
+			q = parseInt(a/b)
+			r = a % b
+			a = b; b = r
+			if (b == 0){
+				return a
+			}
+		}
+	}
+
+	findLCM(A,B){
+		//if a and b are not integers, we make them integers
+		A = Math.abs(parseInt(A))
+		B = Math.abs(parseInt(B))
+		if(A == 0 || B == 0){
+			return 0
+		}
+		
+		return A*B/this.findGCD(A,B)
+	}
+
 
 
 
@@ -253,9 +297,19 @@ class Calculator{
 
 
 
-		//TODO: evaluate double input functions gcd and lcm
 		
-		
+		for (let i = 0; i < chunks.length; i += 1){
+			if(chunks[i] == "d"){
+				return (chunks.slice(0,i-1)
+				.concat([   this.findGCD(chunks[i-1],chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "m"){
+				return (chunks.slice(0,i-1)
+				.concat([   this.findLCM(chunks[i-1],chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+		}
 
 
 		for (let i = 0; i < chunks.length; i += 1){
