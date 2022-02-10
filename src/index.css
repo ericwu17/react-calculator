@@ -30,7 +30,7 @@ ol, ul {
   border: 1px solid rgb(207, 49, 49);
   color:white; /* this is for text color */
   float: left;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   line-height: 34px;
   height: 34px;
@@ -46,7 +46,7 @@ ol, ul {
   border: 1px solid rgb(207, 49, 49);
   color:white; /* this is for text color */
   float: left;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   line-height: 34px;
   height: 34px;
@@ -57,6 +57,12 @@ ol, ul {
   width: 67px;  /*I don't know why it doesn't look aligned when I use 68 pixels, which is exactly double 34.*/
 }
 
+.helpsection {
+  margin-top: 5px;
+}
+.displaypanel {
+  margin-top: 25px;
+}
 
 .square:focus {
   outline: none;

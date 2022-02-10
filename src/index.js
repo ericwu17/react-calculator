@@ -4,36 +4,35 @@ import './index.css';
 
 
 function Button(props) {
-	return (
-		<button className="button"
-			onClick={() => props.onClick()}
-		>
-			{props.value}
-		</button>
-	)
+	if(props.size == 1){
+		return (
+			<button className="button"
+				onClick={() => props.onClick()}
+			>
+				{props.value}
+			</button>
+		)
+	}
+	else if (props.size == 2){
+		return (
+			<button className="doublebutton"
+				onClick={() => props.onClick()}
+			>
+				{props.value}
+			</button>
+		)
+	}
+
 }
 
-function DoubleButton(props) {
-	return (
-		<button className="doublebutton"
-			onClick={() => props.onClick()}
-		>
-			{props.value}
-		</button>
-	)
-}
+
 
 function DisplayPanel(props){
 	let expression = "→ " + props.expression
 	let result = "= " + props.result
 	
-	let prettyPrint = true
-	if(prettyPrint){
-		//do something to format it better
-		expression = expression.replaceAll("s", "sin").replaceAll("c", "cos").replaceAll("t", "tan")
-			.replaceAll("l", "ln").replaceAll("m", "lcm").replaceAll("d", "gcd")
-	}
-
+	expression = expression.replaceAll("s", "sin").replaceAll("c", "cos").replaceAll("t", "tan")
+		.replaceAll("l", "ln").replaceAll("m", "lcm").replaceAll("d", "gcd")
 	return(
 		<div className = "displaypanel">
 			<div className="expression-text">{expression}</div>
@@ -44,16 +43,50 @@ function DisplayPanel(props){
 
 }
 
+function HelpSection(props){
+	return <div className="helpsection">
+		<h1 className="header">
+			Welcome to the calculator!
+		</h1>
+		This calculator supports basic arithmetic, computing the greatest common divisor/lowest common multiple of integers, as well as some additional scientific features! Simply enter your expression and then press <code>GO</code>. Press <code>CL</code> to clear the calculator or <code>←</code> to backspace.
+		<h3>
+			Negative Numbers
+		</h3>
+		You can use the subtract key to indicate negative numbers, but only at the beginning of a parenthetical block. For example, <code>-5*(-3+2)</code> is valid but <code>5*-6</code> is not. Instead try <code>5*(-6)</code>.
+		<h3>
+			Order of Operations
+		</h3>
+		This calculator evaluates the innermost parentheses first, and then does the following operations from left to right:
+		<ol>
+			<li>Exponentiation</li>
+			<li>Multiplication and Division</li>
+			<li>Addition and Subtraction</li>
+		</ol>
+		Note that exponential towers are evaluated from left to right, rather the standard order of from top to bottom. So <code>3^2^0</code> evaluates to <code>1</code> rather than <code>3</code>.
+		<h3>
+			Division by zero and domain errors
+		</h3>
+		Following Javascript's way of handling numbers, <code>1/0</code> on this calculator results in <code>Infinity</code>. <code>-1/0</code> results in <code>-Infinity</code>, as does <code>1/(-0)</code>. Curiously, <code>1/sin(π)</code>, <code>1/sin(2π)</code>, and <code>1/sin(3π)</code> all give different big numbers.
+		<br/><br/>
+		<code>ln(0)</code> gives <code>-Infinity</code>, perhaps as expected. <code>ln(-1)</code> gives <code>NaN</code>
+
+		<h3>
+			<code>gcd()</code> and <code>lcm()</code> Functions
+		</h3>
+		The <code>gcd()</code> and <code>lcm()</code> functions expect two non-zero integral inputs, separated by a comma. 
+		If you enter a non-integral value, the functions will round the number down the to nearest integer, so <code>gcd(7/3,5)</code> is equivalent to <code>gcd(2,5)</code>.
+	</div>
+}
+
+
 class Calculator{
 	// this will be the class which handles all the algorithmic computations
 
 
-	constructor(){
-		//no constructor needed, this class is only a collection of functions.
-	}
+	
 	calculate(expression){
 		if (!expression){
-			return ""
+			return ">Your result will be displayed here<"
 		}
 
 		//firstly, we check to see if parenthesis placement is valid, 
@@ -455,7 +488,7 @@ class Calculator{
 		//console.log("Processing negative signs on: " + JSON.stringify(newChunks))
 
 		if(chunks[0] == "-"){
-			return ["-1", "*"].concat(chunks.slice(1, chunks.length))
+			return ["-1", "*"].concat(newChunks.slice(1, chunks.length))
 		}
 		return newChunks
 
@@ -551,20 +584,20 @@ class Board extends React.Component {
 		this.calculator = new Calculator()
 	}
 
-	renderButton(displayValue, clickValue, isdoublebutton) {
-		if (!isdoublebutton) {
-			return <Button value={displayValue} onClick={() => this.handleClick(clickValue)}>
-			</Button>;
-		} else {
-			return <DoubleButton value={displayValue} onClick={() => this.handleClick(clickValue)}>
-			</DoubleButton>;
-		}
+	renderButton(displayValue, clickValue, size) {
+		if(!size){
+			size = 1
+		} 
+		return <Button value={displayValue} onClick={() => this.handleClick(clickValue)} size={size}>
+		</Button>
+		
+		
+		
 	}
 
 	handleClick(value) {
 		//console.log("hey, I've been clicked and I have value " + value)
 		if (value == "GO") {
-			//run this after validating the input
 			let newResult = this.calculator.calculate(this.state.expression)
 			this.setState({ result: newResult })
 			return
@@ -583,7 +616,6 @@ class Board extends React.Component {
 		let newExpression = this.state.expression + value
 		this.setState({ expression: newExpression })
 	}
-
 
 
 	render() {
@@ -622,26 +654,28 @@ class Board extends React.Component {
 				<div className="buttons-row">
 					{this.renderButton("(", "(")}
 					{this.renderButton(")", ")")}
-					{this.renderButton("sin", "s(", true)}
+					{this.renderButton("sin", "s(", 2)}
 
-					{this.renderButton("gcd", "d(", true)}
+					{this.renderButton("gcd", "d(", 2)}
 				</div>
 				<div className="buttons-row">
-					{this.renderButton("cos", "c(", true)}
+					{this.renderButton("cos", "c(", 2)}
 
-					{this.renderButton("tan", "t(", true)}
+					{this.renderButton("tan", "t(", 2)}
 
-					{this.renderButton("lcm", "m(", true)}
+					{this.renderButton("lcm", "m(", 2)}
 				</div>
 				<div className="buttons-row">
-					{this.renderButton("e", "e", true)}
+					{this.renderButton("e", "e", 2)}
 
-					{this.renderButton("π", "π", true)}
+					{this.renderButton("π", "π", 2)}
 
-					{this.renderButton("ln", "l(", true)}
+					{this.renderButton("ln", "l(", 2)}
 				</div>
+				<HelpSection></HelpSection>
 			</div>
-		);
+			
+		)
 	}
 }
 
