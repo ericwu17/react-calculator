@@ -30,8 +30,8 @@ function DisplayPanel(props){
 	let prettyPrint = true
 	if(prettyPrint){
 		//do something to format it better
-		expression = expression.replace("s", "sin").replace("c", "cos").replace("t", "tan")
-			.replace("l", "ln").replace("m", "lcm").replace("d", "gcd")
+		expression = expression.replaceAll("s", "sin").replaceAll("c", "cos").replaceAll("t", "tan")
+			.replaceAll("l", "ln").replaceAll("m", "lcm").replaceAll("d", "gcd")
 	}
 
 	return(
