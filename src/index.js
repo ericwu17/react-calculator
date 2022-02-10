@@ -68,12 +68,22 @@ function HelpSection(props){
 		</h3>
 		Following Javascript's way of handling numbers, <code>1/0</code> on this calculator results in <code>Infinity</code>. <code>-1/0</code> results in <code>-Infinity</code>, as does <code>1/(-0)</code>. Curiously, <code>1/sin(π)</code>, <code>1/sin(2π)</code>, and <code>1/sin(3π)</code> all give different big numbers.
 		<br/><br/>
-		<code>ln(0)</code> gives <code>-Infinity</code>, perhaps as expected. <code>ln(-1)</code> gives <code>NaN</code>
+		<code>ln(0)</code> gives <code>-Infinity</code>, perhaps as expected. <code>ln(-1)</code> gives <code>NaN</code>. Annoyingly, <code>tan(π/2)</code> gives a large number rather than <code>NaN</code>.
+
+		<h3>
+			Implicit Multiplication
+		</h3>
+		This calculator is quite liberal with inserting multiplication signs where it might make sense. For example:
+		<ul>
+			<li><code>2(4+5) = 2*(4+5)</code></li>
+			<li><code>2((5)2)7 = 2*((5)*2)*7</code></li>
+			<li><code> 3π.1= 3*π*0.1</code></li>
+		</ul>
 
 		<h3>
 			<code>gcd()</code> and <code>lcm()</code> Functions
 		</h3>
-		The <code>gcd()</code> and <code>lcm()</code> functions expect two non-zero integral inputs, separated by a comma. 
+		The <code>gcd()</code> and <code>lcm()</code> functions expect two non-zero integral inputs, separated by a comma (and these are the only two functions that use commas on this calculator). 
 		If you enter a non-integral value, the functions will round the number down the to nearest integer, so <code>gcd(7/3,5)</code> is equivalent to <code>gcd(2,5)</code>.
 	</div>
 }
