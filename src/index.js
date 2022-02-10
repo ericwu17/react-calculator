@@ -30,6 +30,8 @@ function DisplayPanel(props){
 	let prettyPrint = true
 	if(prettyPrint){
 		//do something to format it better
+		expression = expression.replace("s", "sin").replace("c", "cos").replace("t", "tan")
+			.replace("l", "ln").replace("m", "lcm").replace("d", "gcd")
 	}
 
 	return(
@@ -64,7 +66,6 @@ class Calculator{
 		//now we want to replace leading negative signs with {"-1", "*"}
 		chunks = this.processNegativeSigns(chunks)
 
-		console.log("chunks after processing negative signs:" + JSON.stringify(chunks))
 
 		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
 		//i.e. we don't want something like [3,*,-, 6] or [*]
@@ -86,18 +87,21 @@ class Calculator{
 			return 'Hey, "' + res + '" is an invalid number!'
 		}
 
-		//now we would like to check for the correct placement of commas	
+		//now we would like to check for the correct placement of commas
 		if(!this.hasValidCommaPlacement(chunks)){
 			return "Check your commas, please!"
 		}
 
 		//now we convert gcd to a binary operation, so ["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"]
 		let parsedChunks = this.binaryFunctionToInfixNotation(chunks)
-		console.log("After conversion to infix " + JSON.stringify(parsedChunks))
 
+		//now we convert all numbers in the form of strings to the form of floats, 
+		parsedChunks = this.convertNumbersFromStringsToFloats(parsedChunks)
+		console.log("After converting nums to floats " + JSON.stringify(parsedChunks))
 		return "All good so far"
-		//now we convert all numbers in the form of strings to the form of floats, and also add implicit multiplication to the chunks
-		parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
+		
+		//and also add implicit multiplication to the chunks
+		parsedChunks = this.addImplicitMultiplication(parsedChunks)
 		console.log(JSON.stringify(parsedChunks))
 		//console.log(JSON.stringify(this.simplifyOnce(parsedChunks)))
 		
@@ -274,14 +278,16 @@ class Calculator{
 		for (let chunk of chunks){
 			if (Array.isArray(chunk)){
 				newChunks.push(this.convertNumbersFromStringsToFloats(chunk))
-				continue
-			}
-			if ("+-*/".includes(chunk)){
+			} else if (chunk.includes(".") || chunk.includes("1") || chunk.includes("2") || chunk.includes("3")
+			|| chunk.includes("4") || chunk.includes("5")  || chunk.includes("6") || chunk.includes("7")
+			|| chunk.includes("8") || chunk.includes("9")  || chunk.includes("0")
+			){ //sorry, I couldn't think of a better way to write this if statement.
+				newChunks.push(parseFloat(chunk))
+			} else {
 				newChunks.push(chunk)
-				continue
 			}
-			//by this point we know the chunk is a number
-			newChunks.push(parseFloat(chunk))
+			
+			
 		}
 		return newChunks
 	}
