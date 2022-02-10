@@ -95,23 +95,20 @@ class Calculator{
 		//now we convert gcd to a binary operation, so ["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"]
 		let parsedChunks = this.binaryFunctionToInfixNotation(chunks)
 
-		//now we convert all numbers in the form of strings to the form of floats, 
+		//now we convert all numbers in the form of strings to the form of floats. Also converts pi and e to their respective numbers.
 		parsedChunks = this.convertNumbersFromStringsToFloats(parsedChunks)
-		console.log("After converting nums to floats " + JSON.stringify(parsedChunks))
-		return "All good so far"
 		
 		//and also add implicit multiplication to the chunks
 		parsedChunks = this.addImplicitMultiplication(parsedChunks)
-		console.log(JSON.stringify(parsedChunks))
-		//console.log(JSON.stringify(this.simplifyOnce(parsedChunks)))
+		console.log("Immediately before computation: " + JSON.stringify(parsedChunks))
 		
-
-
 
 
 		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
 
 	}
+
+
 
 	binaryFunctionToInfixNotation(chunks, operatorToInsert){
 		//["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"] through this function
@@ -215,13 +212,59 @@ class Calculator{
 	}
 
 	simplifyOnce(chunks){
+		//this function assumes that its input is already "flattened", meaning it assumes that there are no chunks inside the input.
+
+
 		//this function takes in something like [2+3/4-1*6]
 		//and returns [2+0.75-1*6]
 		
-		//it performs the first multiplication or division there is (looking left to right), 
-		//and if there is none, it does the first addition/subtraction
+		//the function first evaluates any single-input function (sin, cos, tan, ln)
+		//the function then evaluates any double-input function (lcm, gcd)
+		//if there are none:it performs the exponentiation there is (looking left to right), 
+		//if there are none:it performs the first multiplication or division there is (looking left to right), 
+		//and if there are none: it does the first addition/subtraction
 
 		//if the chunk already has length 1, then it simply returns the chunk
+
+
+		for (let i = 0; i < chunks.length; i += 1){
+			if(chunks[i] == "s"){
+				return (chunks.slice(0,i)
+				.concat([   Math.sin(chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "c"){
+				return (chunks.slice(0,i)
+				.concat([   Math.cos(chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "t"){
+				return (chunks.slice(0,i)
+				.concat([   Math.tan(chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+			if(chunks[i] == "l"){
+				return (chunks.slice(0,i)
+				.concat([   Math.log(chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+		}
+
+
+
+
+		//TODO: evaluate double input functions gcd and lcm
+		
+		
+
+
+		for (let i = 0; i < chunks.length; i += 1){
+			if(chunks[i] == "^"){
+				return (chunks.slice(0,i-1)
+				.concat([   Math.pow(chunks[i-1],chunks[i+1])   ])
+				.concat(chunks.slice(i+2,chunks.length)))
+			}
+		}
 
 		for (let i = 0; i < chunks.length; i += 1){
 			if(chunks[i] == "*"){
@@ -262,8 +305,10 @@ class Calculator{
 				newChunks.push(chunks[i])
 			}
 
-			let thisChunkIsAValue = !(typeof(chunks[i]) === 'string' || chunks[i] === undefined)
-			let nextChunkIsAValue = !(typeof(chunks[i+1]) === 'string' || chunks[i+1] === undefined)
+			let thisChunkIsAValue = typeof(chunks[i]) === 'number' || Array.isArray(chunks[i])
+			let nextChunkIsAValue = typeof(chunks[i+1]) === 'number' || Array.isArray(chunks[i+1]) || "sctl".includes(chunks[i+1])  //if the next chunk is sin, cos, tan, or ln
+			//In the case [3, "s", [4]] (3sin(4)) we want to insert multiplication before "s" but not after
+			
 			if (thisChunkIsAValue && nextChunkIsAValue){
 				console.log("implicit multiplication at: " + i)
 				//insert a multiplication sign here
@@ -283,7 +328,12 @@ class Calculator{
 			|| chunk.includes("8") || chunk.includes("9")  || chunk.includes("0")
 			){ //sorry, I couldn't think of a better way to write this if statement.
 				newChunks.push(parseFloat(chunk))
-			} else {
+			} else if (chunk == "e"){
+				newChunks.push(Math.E)
+			} else if (chunk == "π"){
+				newChunks.push(Math.PI)
+			}
+			else {
 				newChunks.push(chunk)
 			}
 			
