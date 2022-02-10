@@ -87,7 +87,7 @@ class Calculator{
 		}
 
 		//now we would like to check for the correct placement of commas	
-		if(!hasValidCommaPlaement(chunks)){
+		if(!this.hasValidCommaPlacement(chunks)){
 			return "Check your commas, please!"
 		}
 
@@ -106,6 +106,34 @@ class Calculator{
 
 	}
 
+	hasValidCommaPlacement(chunks, thisChunkShouldHaveComma){
+		//all chunks should contain exactly zero or one commas
+		let commaCount = 0
+		let lastChunkWasBinaryFunction = false
+		for (let elem of chunks){
+			if(Array.isArray(elem)){
+				if(!this.hasValidCommaPlacement(elem, lastChunkWasBinaryFunction)){
+					return false
+				}
+			}
+			if(elem == ","){
+				commaCount += 1
+			}
+			if(elem == "d" || elem == "m"){
+				lastChunkWasBinaryFunction = true
+			} else {
+				lastChunkWasBinaryFunction = false
+			}
+		}
+
+		if(thisChunkShouldHaveComma){
+			return commaCount == 1
+		} else {
+			return commaCount == 0
+		}
+
+		
+	}
 
 	hasValidFunctionPlacement(chunks){
 		let lastChunkWasFunction = false
@@ -255,7 +283,7 @@ class Calculator{
 			if (Array.isArray(chunk) && !this.hasValidOperatorPlacement(chunk)){
 				return false
 			}
-			let chunkIsOperator = "+-*/^".includes(chunk)
+			let chunkIsOperator = "+-*/^,".includes(chunk)
 			if (chunkIsOperator && lastChunkWasOperator) {
 				return false
 			}
