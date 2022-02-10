@@ -50,7 +50,6 @@ class Calculator{
 		//no constructor needed, this class is only a collection of functions.
 	}
 	calculate(expression){
-		console.log("Hey, I'm calculating the expression: " + expression)
 
 		//firstly, we check to see if parenthesis placement is valid, 
 		//since splitExpressionIntoChunks requires valid parenthesis placement in order to work
@@ -60,23 +59,26 @@ class Calculator{
 		
 		
 		let chunks = this.splitExpressionIntoChunks(expression)
-		console.log("here are the chunks I got for the expression: " + JSON.stringify(chunks))
+		console.log("Initial chunks: " + JSON.stringify(chunks))
 
-		
 		//now we want to replace leading negative signs with {"-1", "*"}
 		chunks = this.processNegativeSigns(chunks)
 
-		console.log("here are the chunks after processing negative signs:")
-		console.log(JSON.stringify(chunks))
-
+		console.log("chunks after processing negative signs:" + JSON.stringify(chunks))
 
 		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
 		//i.e. we don't want something like [3,*,-, 6] or [*]
 		//this function also gets rid of expressions containing empty parenthesis such as "3*5-()"
-
 		if(!this.hasValidOperatorPlacement(chunks)){
 			return "Hey, check your operators; one of them is misplaced!"
 		}
+		
+
+		//Now we ensure the functions (sin, cos, tan, ln, gcd, lcm) are always immediately followed by a chunk
+		if(!this.hasValidFunctionPlacement(chunks)){
+			return "Please ensure that all functions are followed by parentheses!"
+		}
+		return
 
 		//we now check to see whether there is an invalid number somwhere such as "." or "24.123.2"
 		let res = this.containsInvalidNumber(chunks)
@@ -95,6 +97,25 @@ class Calculator{
 
 		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
 
+	}
+
+	hasValidFunctionPlacement(chunks){
+		let lastChunkWasFunction = false
+		for (let elem of chunks) {
+			if (Array.isArray(elem)){
+				if(!this.hasValidFunctionPlacement(elem)){
+					return false
+				}
+			} else {
+				if(lastChunkWasFunction){
+					return false
+				}
+			}
+			lastChunkWasFunction = "sctldm".includes(elem)
+			
+
+		}
+		return !lastChunkWasFunction
 	}
 
 	compute(chunks){
@@ -229,7 +250,7 @@ class Calculator{
 			if (Array.isArray(chunk) && !this.hasValidOperatorPlacement(chunk)){
 				return false
 			}
-			let chunkIsOperator = "+-*/".includes(chunk)
+			let chunkIsOperator = "+-*/^".includes(chunk)
 			if (chunkIsOperator && lastChunkWasOperator) {
 				return false
 			}
@@ -415,11 +436,13 @@ class Board extends React.Component {
 					{this.renderButton("0", "0")}
 					{this.renderButton("^", "^")}
 					{this.renderButton("/", "/")}
+					{this.renderButton(",", ",")}
 				</div>
 				<div className="buttons-row">
 					{this.renderButton("(", "(")}
 					{this.renderButton(")", ")")}
 					{this.renderButton("sin", "s(", true)}
+
 					{this.renderButton("gcd", "d(", true)}
 				</div>
 				<div className="buttons-row">
@@ -431,7 +454,9 @@ class Board extends React.Component {
 				</div>
 				<div className="buttons-row">
 					{this.renderButton("e", "e", true)}
+
 					{this.renderButton("π", "π", true)}
+
 					{this.renderButton("ln", "l(", true)}
 				</div>
 			</div>
