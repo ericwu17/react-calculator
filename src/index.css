@@ -54,7 +54,7 @@ ol, ul {
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 68px;
+  width: 67px;  /*I don't know why it doesn't look aligned when I use 68 pixels, which is exactly double 34.*/
 }
 
 

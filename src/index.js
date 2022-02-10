@@ -23,6 +23,25 @@ function DoubleButton(props) {
 	)
 }
 
+function DisplayPanel(props){
+	let expression = "→ " + props.expression
+	let result = "= " + props.result
+	
+	let prettyPrint = true
+	if(prettyPrint){
+		//do something to format it better
+	}
+
+	return(
+		<div className = "displaypanel">
+			<div className="expression-text">{expression}</div>
+			<div className="result-text">{result}</div>
+		</div>
+		
+	)
+
+}
+
 class Calculator{
 	// this will be the class which handles all the algorithmic computations
 
@@ -41,8 +60,7 @@ class Calculator{
 		
 		
 		let chunks = this.splitExpressionIntoChunks(expression)
-		console.log("here are the chunks I got for the expression: ")
-		console.log(JSON.stringify(chunks))
+		console.log("here are the chunks I got for the expression: " + JSON.stringify(chunks))
 
 		
 		//now we want to replace leading negative signs with {"-1", "*"}
@@ -326,17 +344,17 @@ class Board extends React.Component {
 		super(props)
 		this.state = {
 			expression: "",
-			result: "Your result will be displayed here",
+			result: ">Your result will be displayed here<",
 		}
 		this.calculator = new Calculator()
 	}
 
-	renderSquare(i, isdoublebutton) {
+	renderButton(displayValue, clickValue, isdoublebutton) {
 		if (!isdoublebutton) {
-			return <Button value={i} onClick={() => this.handleClick(i)}>
+			return <Button value={displayValue} onClick={() => this.handleClick(clickValue)}>
 			</Button>;
 		} else {
-			return <DoubleButton value={i} onClick={() => this.handleClick(i)}>
+			return <DoubleButton value={displayValue} onClick={() => this.handleClick(clickValue)}>
 			</DoubleButton>;
 		}
 	}
@@ -355,7 +373,7 @@ class Board extends React.Component {
 			return
 		}
 		if (value == "CL") {
-			this.setState({ expression: ""})
+			this.setState({ expression: "", result: ">Your result will be displayed here<"})
 			return
 		}
 
@@ -367,42 +385,54 @@ class Board extends React.Component {
 
 
 	render() {
-
 		return (
 			<div>
-				<div className="expression-text">{"→ " + this.state.expression}</div>
-				<div className="result-text">{"= " + this.state.result}</div>
-				<div className="buttons-row">
-					{this.renderSquare("7")}
-					{this.renderSquare("8")}
-					{this.renderSquare("9")}
-					{this.renderSquare("+")}
-					{this.renderSquare("←")}
-				</div>
-				<div className="buttons-row">
-					{this.renderSquare("4")}
-					{this.renderSquare("5")}
-					{this.renderSquare("6")}
-					{this.renderSquare("-")}
-					{this.renderSquare("CL")}
-				</div>
-				<div className="buttons-row">
-					{this.renderSquare("1")}
-					{this.renderSquare("2")}
-					{this.renderSquare("3")}
-					{this.renderSquare("*")}
-				</div>
-				<div className="buttons-row">
-					{this.renderSquare("0", true)}
+				<DisplayPanel expression={this.state.expression} result={this.state.result}></DisplayPanel>
 
-					{this.renderSquare(".")}
-					{this.renderSquare("/")}
+				<div className="buttons-row">
+					{this.renderButton("7", "7")}
+					{this.renderButton("8", "8")}
+					{this.renderButton("9", "9")}
+					{this.renderButton("+", "+")}
+					{this.renderButton("←", "←")}
 				</div>
 				<div className="buttons-row">
-					{this.renderSquare("GO", true)}
+					{this.renderButton("4", "4")}
+					{this.renderButton("5", "5")}
+					{this.renderButton("6", "6")}
+					{this.renderButton("-", "-")}
+					{this.renderButton("CL", "CL")}
+				</div>
+				<div className="buttons-row">
+					{this.renderButton("1", "1")}
+					{this.renderButton("2", "2")}
+					{this.renderButton("3", "3")}
+					{this.renderButton("*", "*")}
+					{this.renderButton("GO", "GO")}
+				</div>
+				<div className="buttons-row">
+					{this.renderButton(".", ".")}
+					{this.renderButton("0", "0")}
+					{this.renderButton("^", "^")}
+					{this.renderButton("/", "/")}
+				</div>
+				<div className="buttons-row">
+					{this.renderButton("(", "(")}
+					{this.renderButton(")", ")")}
+					{this.renderButton("sin", "s(", true)}
+					{this.renderButton("gcd", "d(", true)}
+				</div>
+				<div className="buttons-row">
+					{this.renderButton("cos", "c(", true)}
 
-					{this.renderSquare("(")}
-					{this.renderSquare(")")}
+					{this.renderButton("tan", "t(", true)}
+
+					{this.renderButton("lcm", "m(", true)}
+				</div>
+				<div className="buttons-row">
+					{this.renderButton("e", "e", true)}
+					{this.renderButton("π", "π", true)}
+					{this.renderButton("ln", "l(", true)}
 				</div>
 			</div>
 		);
