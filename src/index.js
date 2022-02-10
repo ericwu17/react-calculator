@@ -78,13 +78,20 @@ class Calculator{
 		if(!this.hasValidFunctionPlacement(chunks)){
 			return "Please ensure that all functions are followed by parentheses!"
 		}
-		return
+		
 
 		//we now check to see whether there is an invalid number somwhere such as "." or "24.123.2"
-		let res = this.containsInvalidNumber(chunks)
+		let res = this.findInvalidNumber(chunks)
 		if(res){
 			return 'Hey, "' + res + '" is an invalid number!'
 		}
+
+		//now we would like to check for the correct placement of commas	
+		if(!hasValidCommaPlaement(chunks)){
+			return "Check your commas, please!"
+		}
+
+		return "All good so far"
 
 		//now we convert all numbers in the form of strings to the form of floats, and also add implicit multiplication to the chunks
 		const parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
@@ -98,6 +105,7 @@ class Calculator{
 		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
 
 	}
+
 
 	hasValidFunctionPlacement(chunks){
 		let lastChunkWasFunction = false
@@ -139,7 +147,6 @@ class Calculator{
 		}
 		return newChunks[0]
 	}
-	
 
 	simplifyOnce(chunks){
 		//this function takes in something like [2+3/4-1*6]
@@ -179,7 +186,6 @@ class Calculator{
 		return chunks
 	}
 
-
 	addImplicitMultiplication(chunks){
 		let newChunks = []
 		for(let i = 0; i < chunks.length; i += 1){
@@ -201,7 +207,6 @@ class Calculator{
 		return newChunks
 	}
 
-
 	convertNumbersFromStringsToFloats(chunks){
 		let newChunks = []
 		for (let chunk of chunks){
@@ -219,26 +224,26 @@ class Calculator{
 		return newChunks
 	}
 
-	containsInvalidNumber(chunks) {
+	findInvalidNumber(chunks) {
 		//console.log("seeing if there's an invalid number in" + JSON.stringify(chunks))
-		for (let chunk of chunks){
-			if (Array.isArray(chunk)){
-				let res = this.containsInvalidNumber(chunk)
+		for (let elem of chunks){
+			if (Array.isArray(elem)){
+				let res = this.findInvalidNumber(elem)
 				if(res){
 					return res
 				}
 				continue
 			}
 			
-			if ("+-*/".includes(chunk)){
+			if (!elem.includes(".")){
 				continue
 			}
-			//by this point we know the chunk is a number, since parentheses are never included
-			if (chunk == ".") {
-				return chunk
+			//by this point we know the chunk is a string containing "."
+			if (elem == ".") {
+				return elem
 			}
-			if (chunk.split(".").length - 1 > 1){
-				return chunk
+			if (elem.split(".").length - 1 > 1){
+				return elem
 			}
 			
 		}
@@ -280,7 +285,6 @@ class Calculator{
 		return newChunks
 
 	}
-
 
 	hasValidParenthesisPlacement(expression){
 		let howDeepIntoParens = 0
@@ -354,8 +358,6 @@ class Calculator{
 
 		return chunks
 	}
-
-
 
 }
 
