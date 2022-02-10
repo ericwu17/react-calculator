@@ -91,10 +91,13 @@ class Calculator{
 			return "Check your commas, please!"
 		}
 
-		return "All good so far"
+		//now we convert gcd to a binary operation, so ["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"]
+		let parsedChunks = this.binaryFunctionToInfixNotation(chunks)
+		console.log("After conversion to infix " + JSON.stringify(parsedChunks))
 
+		return "All good so far"
 		//now we convert all numbers in the form of strings to the form of floats, and also add implicit multiplication to the chunks
-		const parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
+		parsedChunks = this.addImplicitMultiplication(this.convertNumbersFromStringsToFloats(chunks))
 		console.log(JSON.stringify(parsedChunks))
 		//console.log(JSON.stringify(this.simplifyOnce(parsedChunks)))
 		
@@ -104,6 +107,37 @@ class Calculator{
 
 		return this.compute(parsedChunks).toFixed(6).replace(/\.?0*$/,'') //round to 6 decimal places and trim trailing zeros and decimal point
 
+	}
+
+	binaryFunctionToInfixNotation(chunks, operatorToInsert){
+		//["g" ["2", "3"], "+", "5"] becomes [["2", "g", "5"], "+", "5"] through this function
+		//if operatorToInsert is not null, that means this chunk immediately follows a gcd or lcm function. So we need to insert operatorToInsert which could be "d" or "m"
+
+		let newChunks = []
+		if(operatorToInsert){
+			let firstHalf = chunks.slice(0, chunks.indexOf(","))
+			let secondHalf = chunks.slice(chunks.indexOf(",") + 1, chunks.length)
+			return [this.binaryFunctionToInfixNotation(firstHalf), operatorToInsert, this.binaryFunctionToInfixNotation(secondHalf)]
+		}
+		
+		let lastElem = ""
+		for (let elem of chunks) {
+			if(Array.isArray(elem)) {
+				if (lastElem == "d" || lastElem == "m"){
+					newChunks.pop()
+					newChunks.push(this.binaryFunctionToInfixNotation(elem, lastElem))
+				} else {
+					newChunks.push(this.binaryFunctionToInfixNotation(elem))
+				}
+
+			} else {
+				newChunks.push(elem)
+			}
+
+			lastElem = elem
+		}
+
+		return newChunks
 	}
 
 	hasValidCommaPlacement(chunks, thisChunkShouldHaveComma){
