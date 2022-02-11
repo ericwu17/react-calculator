@@ -4,6 +4,7 @@ import './index.css';
 
 
 function Button(props) {
+	console.log('re rendering a button')
 	if(props.size == 1){
 		return (
 			<button className="button"
