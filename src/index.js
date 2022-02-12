@@ -92,6 +92,7 @@ function HelpSection(props){
 
 class Calculator{
 	// this will be the class which handles all the algorithmic computations
+	// its main purpose is the calculate function, which takes in an expression (string) and returns a final answer.
 
 
 	
@@ -286,11 +287,11 @@ class Calculator{
 		let newChunks = []
 
 		//first we do anything inside parenthesis
-		for (let chunk of chunks){
-			if (Array.isArray(chunk)){
-				newChunks.push(this.compute(chunk))
+		for (let elem of chunks){
+			if (Array.isArray(elem)){
+				newChunks.push(this.compute(elem))
 			} else{
-				newChunks.push(chunk)
+				newChunks.push(elem)
 			}
 		}
 
@@ -421,21 +422,21 @@ class Calculator{
 
 	convertNumbersFromStringsToFloats(chunks){
 		let newChunks = []
-		for (let chunk of chunks){
-			if (Array.isArray(chunk)){
-				newChunks.push(this.convertNumbersFromStringsToFloats(chunk))
-			} else if (chunk.includes(".") || chunk.includes("1") || chunk.includes("2") || chunk.includes("3")
-			|| chunk.includes("4") || chunk.includes("5")  || chunk.includes("6") || chunk.includes("7")
-			|| chunk.includes("8") || chunk.includes("9")  || chunk.includes("0")
+		for (let elem of chunks){
+			if (Array.isArray(elem)){
+				newChunks.push(this.convertNumbersFromStringsToFloats(elem))
+			} else if (elem.includes(".") || elem.includes("1") || elem.includes("2") || elem.includes("3")
+			|| elem.includes("4") || elem.includes("5")  || elem.includes("6") || elem.includes("7")
+			|| elem.includes("8") || elem.includes("9")  || elem.includes("0")
 			){ //sorry, I couldn't think of a better way to write this if statement.
-				newChunks.push(parseFloat(chunk))
-			} else if (chunk == "e"){
+				newChunks.push(parseFloat(elem))
+			} else if (elem == "e"){
 				newChunks.push(Math.E)
-			} else if (chunk == "π"){
+			} else if (elem == "π"){
 				newChunks.push(Math.PI)
 			}
 			else {
-				newChunks.push(chunk)
+				newChunks.push(elem)
 			}
 			
 			
@@ -470,11 +471,11 @@ class Calculator{
 
 	hasValidOperatorPlacement(chunks){
 		let lastChunkWasOperator = true
-		for (let chunk of chunks){
-			if (Array.isArray(chunk) && !this.hasValidOperatorPlacement(chunk)){
+		for (let elem of chunks){
+			if (Array.isArray(elem) && !this.hasValidOperatorPlacement(elem)){
 				return false
 			}
-			let chunkIsOperator = "+-*/^,".includes(chunk)
+			let chunkIsOperator = "+-*/^,".includes(elem)
 			if (chunkIsOperator && lastChunkWasOperator) {
 				return false
 			}
@@ -488,11 +489,11 @@ class Calculator{
 
 	processNegativeSigns(chunks) {
 		let newChunks = []
-		for (let chunk of chunks) {
-			if(Array.isArray(chunk)){
-				newChunks.push(this.processNegativeSigns(chunk))
+		for (let elem of chunks) {
+			if(Array.isArray(elem)){
+				newChunks.push(this.processNegativeSigns(elem))
 			} else {
-				newChunks.push(chunk)
+				newChunks.push(elem)
 			}
 		}
 
