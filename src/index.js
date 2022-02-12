@@ -585,7 +585,7 @@ class Calculator{
 }
 
 
-class Board extends React.Component {
+class ControlPanel extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -683,7 +683,6 @@ class Board extends React.Component {
 
 					{this.renderButton("ln", "l(", 2)}
 				</div>
-				<HelpSection></HelpSection>
 			</div>
 			
 		)
@@ -691,9 +690,21 @@ class Board extends React.Component {
 }
 
 
+function Board(props) {
+	return (
+	<div>
+		<ControlPanel />
+		<HelpSection />
+	</div>
+	)
+
+}
+
+
+
 // ========================================
 
 ReactDOM.render(
 	<Board />,
 	document.getElementById('root')
-);
+)
