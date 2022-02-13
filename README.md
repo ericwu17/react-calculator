@@ -8,3 +8,7 @@ It was necessary to add the four basic functions, and exponentiation is quite ba
 
 After getting the user's expression as a string, our first action is to split the input into several chunks, with a number of an operator getting its own string. Layers of parentheses are represented by nesting the chunks within other chunks. This organizational structure allows recursion to be used to calculate the entire expression.
 
+# To learn more
+[Explanatory video 1](https://www.loom.com/share/4e98f96dd5624362ab151dd37a66ffad)
+[Explanatory video 2](https://www.loom.com/share/576838ba453b4a21a87e95c91c4f482f)
+
