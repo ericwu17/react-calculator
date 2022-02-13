@@ -4,28 +4,22 @@ import './index.css';
 
 
 function Button(props) {
-	console.log('re rendering a button')
+	//console.log('re rendering a button')
+	let className = ""
 	if(props.size == 1){
-		return (
-			<button className="button"
-				onClick={() => props.onClick()}
-			>
-				{props.value}
-			</button>
-		)
+		className = "button"
+	} else if(props.size == 2){
+		className = "doublebutton"
 	}
-	else if (props.size == 2){
-		return (
-			<button className="doublebutton"
-				onClick={() => props.onClick()}
-			>
-				{props.value}
-			</button>
-		)
-	}
+	return (
+		<button className={className}
+			onClick={() => props.onClick()}
+		>
+			{props.value}
+		</button>
+	)
 
 }
-
 
 
 function DisplayPanel(props){
@@ -140,7 +134,7 @@ class Calculator{
 		//now we want to eliminate the possibility of operators being next to each other, or at the end of the chunkstring,  (if an operator is missing between two numbers then we assume multiplication, we'll do that later)
 		//i.e. we don't want something like [3,*,-, 6] or [*]
 		//this function also gets rid of expressions containing empty parenthesis such as "3*5-()"
-		console.log("chunks: " + JSON.stringify(chunks))
+		//console.log("chunks: " + JSON.stringify(chunks))
 		if(!this.hasValidOperatorPlacement(chunks)){
 			return "Hey, check your operators; one of them is misplaced!"
 		}
@@ -295,7 +289,7 @@ class Calculator{
 			}
 		}
 
-		//then we repeatedly call simplifyOnce
+		//by this point the chunk has been flattened so we can repeatedly call simplifyOnce
 		while(newChunks.length > 1){
 			console.log("simplyfying once " +JSON.stringify(newChunks))
 			newChunks = this.simplifyOnce(newChunks)
@@ -312,9 +306,9 @@ class Calculator{
 		
 		//the function first evaluates any single-input function (sin, cos, tan, ln)
 		//the function then evaluates any double-input function (lcm, gcd)
-		//if there are none:it performs the exponentiation there is (looking left to right), 
-		//if there are none:it performs the first multiplication or division there is (looking left to right), 
-		//and if there are none: it does the first addition/subtraction
+		//if there are none:it performs exponentiation (left to right), 
+		//if there are none:it performs the first multiplication or division (left to right), 
+		//and if there are none: it does the first addition/subtraction (left to right)
 
 		//if the chunk already has length 1, then it simply returns the chunk
 
@@ -342,10 +336,6 @@ class Calculator{
 			}
 		}
 
-
-
-
-		
 		for (let i = 0; i < chunks.length; i += 1){
 			if(chunks[i] == "d"){
 				return (chunks.slice(0,i-1)
