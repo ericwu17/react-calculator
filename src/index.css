@@ -1,13 +1,4 @@
-/* body {
-  font: 14px "Century Gothic", Futura, sans-serif;
-  margin: 20px;
-} */
-
-ol, ul {
-  padding-left: 30px;
-}
-
-.buttons-row:after {
+.buttons-row::after {
   clear: both;
   content: "";
   display: table;
@@ -15,46 +6,59 @@ ol, ul {
 
 .expression-text {
   margin-bottom: 10px;
-  font-family: Courier New, monospace;
+  font-family: monospace;
   font-size: 17px;
+  border:3px solid green;
+  border-radius: 1000000px;
 }
 .result-text {
   margin-bottom: 10px;
-  font-family: Courier New, monospace;
+  font-family: monospace;
   font-size: 15px;
 }
 
 
 .button {
   background: rgb(0, 0, 0);
-  border: 1px solid rgb(207, 49, 49);
+  border: 3px solid rgb(207, 49, 49);
   color:white; /* this is for text color */
   float: left;
   font-size: 22px;
   font-weight: bold;
+  font-family: monospace;
   line-height: 34px;
   height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
+  /* margin-right: -1px; */
+  /* margin-top: -1px; */
   padding: 0;
   text-align: center;
   width: 34px;
+  border-radius: 3;
+  border-collapse: separate;
+  /* clear:both;
+  display:table; */
 }
 
 .doublebutton {
   background: rgb(0, 0, 0);
-  border: 1px solid rgb(207, 49, 49);
+  border: 3px solid rgb(207, 49, 49);
   color:white; /* this is for text color */
   float: left;
   font-size: 22px;
   font-weight: bold;
   line-height: 34px;
   height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
+  /* margin-right: -1px;
+  margin-top: -1px; */
+  margin:0px;
   padding: 0;
   text-align: center;
-  width: 67px;  /*I don't know why it doesn't look aligned when I use 68 pixels, which is exactly double 34.*/
+  border-radius: 3;
+  width: 68px;  /*I don't know why it doesn't look aligned when I use 68 pixels, which is exactly double 34.*/
+}
+.button:hover, .doublebutton:hover{
+  /* border:thick; */
+  border-color: yellow;
 }
 
 .helpsection {
@@ -64,19 +68,21 @@ ol, ul {
   margin-top: 25px;
 }
 
-.square:focus {
-  outline: none;
-}
 
-.kbd-navigation .square:focus {
-  background: #ddd;
+.helpsection {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
-
-.game {
-  display: flex;
-  flex-direction: row;
+.helpsection code{
+  font-family: monospace;
+  color:blue;
 }
-
-.game-info {
-  margin-left: 20px;
+.helpsection code{
+  font-family: monospace;
+  color:red;
 }
+/* ol{
+  width: 100px;
+  overflow: auto;
+  border: 100px solid black;
+  margin: 100px
+} */
